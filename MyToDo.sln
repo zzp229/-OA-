@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyToDo", "MyToDo\MyToDo.csproj", "{03657736-1CE6-4764-A11C-D54140B9464D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyToDo.Api", "MyToDo.Api\MyToDo.Api.csproj", "{C975A79E-8046-4DB5-82A2-E3511FD3DC03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyToDo.Shared", "MyToDo.Shared\MyToDo.Shared.csproj", "{9BB01078-82B5-4B47-81C2-752869C805FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{03657736-1CE6-4764-A11C-D54140B9464D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03657736-1CE6-4764-A11C-D54140B9464D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03657736-1CE6-4764-A11C-D54140B9464D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03657736-1CE6-4764-A11C-D54140B9464D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C975A79E-8046-4DB5-82A2-E3511FD3DC03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C975A79E-8046-4DB5-82A2-E3511FD3DC03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C975A79E-8046-4DB5-82A2-E3511FD3DC03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C975A79E-8046-4DB5-82A2-E3511FD3DC03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BB01078-82B5-4B47-81C2-752869C805FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BB01078-82B5-4B47-81C2-752869C805FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BB01078-82B5-4B47-81C2-752869C805FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BB01078-82B5-4B47-81C2-752869C805FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {18772976-620D-419A-B9B5-D3537511A718}
+	EndGlobalSection
+EndGlobal
