@@ -43,6 +43,7 @@ namespace MyToDo.Api
             .AddCustomRepository<User, UserRepository>();  // 后面这个是工作单元
 
             services.AddTransient<IToDoService, ToDoService>(); // 这个是待办事项的服务
+            services.AddTransient<IMemoService, MemoService>(); // 注入备忘录服务
 
             // 注入AutoMapper的服务
             var automapperConfog = new MapperConfiguration(config =>

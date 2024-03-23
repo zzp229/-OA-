@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using MyToDo.Shared.Parameters;
+using System.Threading.Tasks;
 
 namespace MyToDo.Api.Service
 {
@@ -8,7 +9,7 @@ namespace MyToDo.Api.Service
     /// <typeparam name="T"></typeparam>
     public interface IBaseService<T>
     {
-        Task<ApiResponse> GetAllAsync();
+        Task<ApiResponse> GetAllAsync(QueryParameter query);    // 给的这个参数是分页查询的参数
 
         Task<ApiResponse> GetSingleAsync(int id);
 

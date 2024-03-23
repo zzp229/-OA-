@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 namespace MyToDo.Api.Controllers
 {
     /// <summary>
-    /// 待办事项控制器
+    /// 备忘录控制器
     /// </summary>
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class ToDoController : ControllerBase
+    public class MemoController : ControllerBase
     {
-        private readonly IToDoService service;
+        private readonly IMemoService service;
 
-        public ToDoController(IToDoService service)
+        public MemoController(IMemoService service)
         {
             this.service = service;
         }
@@ -33,10 +33,10 @@ namespace MyToDo.Api.Controllers
         public async Task<ApiResponse> GetAll([FromQuery] QueryParameter parameter) => await service.GetAllAsync(parameter);
 
         [HttpPost]
-        public async Task<ApiResponse> Add([FromBody] ToDoDto model) => await service.AddAsync(model);
+        public async Task<ApiResponse> Add([FromBody] MemoDto model) => await service.AddAsync(model);
 
         [HttpPost]
-        public async Task<ApiResponse> Update([FromBody] ToDoDto model) => await service.UpdateAsync(model);
+        public async Task<ApiResponse> Update([FromBody] MemoDto model) => await service.UpdateAsync(model);
 
         [HttpDelete]
         public async Task<ApiResponse> Delete(int id) => await service.DeleteAsync(id);
