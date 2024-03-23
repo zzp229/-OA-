@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyToDo.Api.Context;
 using MyToDo.Api.Context.Repository;
+using MyToDo.Api.Extensions;
 using MyToDo.Api.Service;
 using System;
 using System.Collections.Generic;
@@ -41,6 +43,14 @@ namespace MyToDo.Api
             .AddCustomRepository<User, UserRepository>();  // 后面这个是工作单元
 
             services.AddTransient<IToDoService, ToDoService>(); // 这个是待办事项的服务
+
+            // 注入AutoMapper的服务
+            var automapperConfog = new MapperConfiguration(config =>
+            {
+                config.AddProfile(new AutoMapperProFile());
+            });
+
+            services.AddSingleton(automapperConfog.CreateMapper());
 
             services.AddControllers();
             services.AddSwaggerGen(c =>

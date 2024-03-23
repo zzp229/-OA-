@@ -1,4 +1,6 @@
-﻿using MyToDo.Api.Context;
+﻿using AutoMapper;
+using MyToDo.Api.Context;
+using MyToDo.Shared.Dtos;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,18 +17,21 @@ namespace MyToDo.Api.Service
     public class ToDoService : IToDoService
     {
         private readonly IUnitOfWork work;
+        private readonly IMapper Mapper;
 
         // 构造函数注入工作单元
-        public ToDoService(IUnitOfWork work)
+        public ToDoService(IUnitOfWork work, IMapper mapper)
         {
             this.work = work;
+            this.Mapper = mapper;
         }
 
-        public async Task<ApiResponse> AddAsync(ToDo model)
+        public async Task<ApiResponse> AddAsync(ToDoDto model)
         {
             try
             {
-                await work.GetRepository<ToDo>().InsertAsync(model);
+                var todo = Mapper.Map<ToDo>(model); //将ToDoDto转换为ToDo（响应数据类转换为数据库相关类）
+                await work.GetRepository<ToDo>().InsertAsync(todo);
                 if (await work.SaveChangesAsync() > 0)
                     return new ApiResponse(true, model);
                 return new ApiResponse(false, "添加数据失败");
@@ -82,20 +87,22 @@ namespace MyToDo.Api.Service
             }
         }
 
-        public async Task<ApiResponse> UpdateAsync(ToDo model)
+        public async Task<ApiResponse> UpdateAsync(ToDoDto model)
         {
             try
             {
+                var dbToDo = Mapper.Map<ToDo>(model);   // ToDoDto转换为ToDo
+
                 // 从工作单元中获取Repository存储库
                 var repository = work.GetRepository<ToDo>();
                 // 将要更新的数据类获取出来
                 var todo = await repository.GetFirstOrDefaultAsync(predicate: x => x.Id.Equals(model.Id));
 
                 // 更新
-                todo.Title = model.Title;
-                todo.Content = model.Content;
-                todo.Status = model.Status;
-                todo.UpdateDate = model.UpdateDate;
+                todo.Title = dbToDo.Title;
+                todo.Content = dbToDo.Content;
+                todo.Status = dbToDo.Status;
+                todo.UpdateDate = DateTime.Now;
 
                 // 更新数据库
                 repository.Update(todo);
