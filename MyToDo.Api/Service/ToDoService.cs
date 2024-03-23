@@ -84,7 +84,32 @@ namespace MyToDo.Api.Service
 
         public async Task<ApiResponse> UpdateAsync(ToDo model)
         {
-            return null;
+            try
+            {
+                // 从工作单元中获取Repository存储库
+                var repository = work.GetRepository<ToDo>();
+                // 将要更新的数据类获取出来
+                var todo = await repository.GetFirstOrDefaultAsync(predicate: x => x.Id.Equals(model.Id));
+
+                // 更新
+                todo.Title = model.Title;
+                todo.Content = model.Content;
+                todo.Status = model.Status;
+                todo.UpdateDate = model.UpdateDate;
+
+                // 更新数据库
+                repository.Update(todo);
+
+                // 执行看看对不对
+                if (await work.SaveChangesAsync() > 0)
+                    return new ApiResponse(true, todo); // 返回报文
+                return new ApiResponse("更新数据异常!");
+
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
         }
 
     }
