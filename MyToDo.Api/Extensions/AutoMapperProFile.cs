@@ -13,6 +13,7 @@ namespace MyToDo.Api.Extensions
         {
             CreateMap<ToDo, ToDoDto>().ReverseMap();    // 添加上这个就可以相互转换了
             CreateMap<Memo, MemoDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
         }
     }
 }

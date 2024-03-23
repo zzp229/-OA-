@@ -44,6 +44,7 @@ namespace MyToDo.Api
 
             services.AddTransient<IToDoService, ToDoService>(); // 这个是待办事项的服务
             services.AddTransient<IMemoService, MemoService>(); // 注入备忘录服务
+            services.AddTransient<ILoginService, LoginService>();
 
             // 注入AutoMapper的服务
             var automapperConfog = new MapperConfiguration(config =>
