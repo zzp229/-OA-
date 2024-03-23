@@ -72,11 +72,11 @@ namespace MyToDo.Api.Service
             {
                 var repository = work.GetRepository<ToDo>();
                 var todos = await repository.GetPagedListAsync(predicate:
-                    x => string.IsNullOrWhiteSpace(parameter.Search) ? true : x.Title.Equals(parameter.Search),
-                    pageIndex: parameter.PageIndex,
-                    pageSize: parameter.PageSize,
-                    orderBy: source => source.OrderByDescending(t => t.CreateDate));
-                return new ApiResponse(false, todos);
+                   x => string.IsNullOrWhiteSpace(parameter.Search) ? true : x.Title.Contains(parameter.Search),
+                   pageIndex: parameter.PageIndex,
+                   pageSize: parameter.PageSize,
+                   orderBy: source => source.OrderByDescending(t => t.CreateDate));
+                return new ApiResponse(true, todos);
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace MyToDo.Api.Service
             {
                 var repository = work.GetRepository<ToDo>();
                 var todo = await repository.GetFirstOrDefaultAsync(predicate: x => x.Id.Equals(id));
-                return new ApiResponse(false, todo);
+                return new ApiResponse(true, todo);
             }
             catch (Exception ex)
             {
