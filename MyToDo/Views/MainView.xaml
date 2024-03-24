@@ -24,8 +24,9 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
+    <!--好像是要有这一层才能有弹窗-->
     <materialDesign:DialogHost
-        DialogTheme="Inherit"
+        DialogTheme="Inherit" x:Name="DialogHost"
         Identifier="RootDialog"
         SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
 

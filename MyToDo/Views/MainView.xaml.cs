@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MyToDo.Extensions;
+using Prism.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +21,20 @@ namespace MyToDo.Views
     /// </summary>
     public partial class MainView : Window
     {
-        public MainView()
+
+        public MainView(IEventAggregator aggregator) // 构造函数注入了聚合器
         {
             InitializeComponent();
+
+            // 这个聚合器是调整加载的
+            // 注册等待消息窗口
+            aggregator.Resgiter(arg =>
+            {
+                DialogHost.IsOpen = arg.IsOpen; // 这个应该是侧边栏
+
+                if (DialogHost.IsOpen)
+                    DialogHost.DialogContent = new ProgressView();  // 加载动画用户控件
+            });
 
             // 点击进入页面了就关闭左侧小弹窗
             menuBar.SelectionChanged += (s, e) =>

@@ -1,7 +1,9 @@
 ﻿using MyToDo.Service;
 using MyToDo.Shared.Dtos;
 using Prism.Commands;
+using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Regions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace MyToDo.ViewModels
 {
-    public class ToDoViewModel : BindableBase
+    public class ToDoViewModel : NavigationViewModel
     {
-        public ToDoViewModel(IToDoService service)
+        public ToDoViewModel(IToDoService service, IContainerProvider provider)
+            : base(provider)
         {
             ToDoDtos = new ObservableCollection<ToDoDto>(); // 客户端的使用的是Share下面的类
             AddCommand = new DelegateCommand(Add);
             this.service = service;
-            CreateToDoList();
         }
 
         private bool isRightDrawerOpen;
@@ -52,8 +54,13 @@ namespace MyToDo.ViewModels
         }
 
 
-        async void CreateToDoList()
+        /// <summary>
+        /// 获取数据
+        /// </summary>
+        async void GetDataAsync()
         {
+            UpdateLoading(true);    // 打开等待窗口
+
             var todoResult = await service.GetAllAsync(new Shared.Parameters.QueryParameter()
             {
                 PageIndex = 0,
@@ -68,6 +75,18 @@ namespace MyToDo.ViewModels
                     toDoDtos.Add(item);
                 }
             }
+
+            UpdateLoading(false);   // 数据加载完成后关闭动画
+        }
+
+        /// <summary>
+        /// 这里重写作用就是导航过去就加载数据
+        /// </summary>
+        /// <param name="navigationContext"></param>
+        public override void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            base.OnNavigatedTo(navigationContext);
+            GetDataAsync();
         }
 
     }
