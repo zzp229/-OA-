@@ -1,4 +1,5 @@
-﻿using MyToDo.Service;
+﻿using Microsoft.Win32;
+using MyToDo.Service;
 using MyToDo.Shared.Dtos;
 using Prism.Commands;
 using Prism.Ioc;
@@ -19,9 +20,37 @@ namespace MyToDo.ViewModels
             : base(provider)
         {
             ToDoDtos = new ObservableCollection<ToDoDto>(); // 客户端的使用的是Share下面的类
-            AddCommand = new DelegateCommand(Add);
+            ExecuteCommand = new DelegateCommand<string>(Execute);
+            SelectedCommand = new DelegateCommand<ToDoDto>(Selected);
             this.service = service;
         }
+
+        private void Execute(string obj)
+        {
+            switch (obj)
+            {
+                case "新增":
+                    Add();
+                    break;
+                case "查询":
+                    GetDataAsync();
+                    break;
+                case "保存": Save(); break;
+            }
+        }
+
+
+
+        private string search;
+        /// <summary>
+        /// 搜索条件
+        /// </summary>
+        public string Search
+        {
+            get { return search; }
+            set { search = value; RaisePropertyChanged(); }
+        }
+
 
         private bool isRightDrawerOpen;
         /// <summary>
@@ -33,16 +62,102 @@ namespace MyToDo.ViewModels
             set { isRightDrawerOpen = value; RaisePropertyChanged(); }
         }
 
+        private ToDoDto currentDto;
+        /// <summary>
+        /// 编辑选择对象/新增时对象
+        /// </summary>
+        public ToDoDto CurrentDto
+        {
+            get { return currentDto; }
+            set { currentDto = value; RaisePropertyChanged(); }
+        }
+
+
         /// <summary>
         /// 添加待办
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
         private void Add()
         {
+            CurrentDto = new ToDoDto();
             IsRightDrawerOpen = true;
         }
 
-        public DelegateCommand AddCommand { get; set; }
+        private async void Save()
+        {
+            if (string.IsNullOrWhiteSpace(CurrentDto.Title) || string.IsNullOrWhiteSpace(CurrentDto.Content))
+                return;
+
+            UpdateLoading(true);
+
+            try
+            {
+                if (CurrentDto.Id > 0)
+                {
+                    var updateResult = await service.UpdateAsync(CurrentDto);
+                    if (updateResult.Status)
+                    {
+                        var todo = ToDoDtos.FirstOrDefault(t => t.Id == CurrentDto.Id);
+                        if (todo != null)
+                        {
+                            todo.Title = CurrentDto.Title;
+                            todo.Content = CurrentDto.Content;
+                            todo.Status = CurrentDto.Status;
+                        }
+                    }
+                    IsRightDrawerOpen = false;
+                }
+                else
+                {
+                    var addResult = await service.AddAsync(CurrentDto);
+                    if (addResult.Status)
+                    {
+                        toDoDtos.Add(addResult.Result);
+                        IsRightDrawerOpen = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+
+            }
+            finally
+            {
+                UpdateLoading(false);
+            }
+
+
+        }
+
+        // 选中了就打开右边窗口
+        private async void Selected(ToDoDto obj)
+        {
+            try
+            {
+                UpdateLoading(true);
+                var todoResult = await service.GetFirstOfDefaultAsync(obj.Id);
+
+                if (todoResult.Status)
+                {
+                    CurrentDto = todoResult.Result;
+                    IsRightDrawerOpen = true;
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                UpdateLoading(false);
+            }
+
+        }
+
+
+        public DelegateCommand<string> ExecuteCommand { get; private set; }
+        public DelegateCommand<ToDoDto> SelectedCommand { get; private set; }
 
         private ObservableCollection<ToDoDto> toDoDtos;
         private readonly IToDoService service;
@@ -65,6 +180,7 @@ namespace MyToDo.ViewModels
             {
                 PageIndex = 0,
                 PageSize = 100,
+                Search = Search,    // 这个是查询条件应该
             });
 
             if (todoResult.Status)
