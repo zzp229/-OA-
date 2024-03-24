@@ -8,11 +8,6 @@ namespace MyToDo.Shared
 {
     public class ApiResponse
     {
-        public ApiResponse(string message, bool status = false)
-        {
-            this.Message = message;
-            this.Status = status;
-        }
         public string Message { get; set; }
 
         public bool Status { get; set; }

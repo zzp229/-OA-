@@ -32,10 +32,10 @@ namespace MyToDo.Api.Service
         {
             try
             {
-                var todo = Mapper.Map<Memo>(model); //将ToDoDto转换为ToDo（响应数据类转换为数据库相关类）
-                await work.GetRepository<Memo>().InsertAsync(todo);
+                var memo = Mapper.Map<Memo>(model); //将ToDoDto转换为ToDo（响应数据类转换为数据库相关类）
+                await work.GetRepository<Memo>().InsertAsync(memo);
                 if (await work.SaveChangesAsync() > 0)
-                    return new ApiResponse(true, model);
+                    return new ApiResponse(true, memo);
                 return new ApiResponse(false, "添加数据失败");
             }
             catch (Exception ex)

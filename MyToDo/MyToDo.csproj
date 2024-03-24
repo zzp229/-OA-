@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Images\user.jpg" />
+    <None Remove="Images\wind.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,7 @@
 
   <ItemGroup>
     <Resource Include="Images\user.jpg" />
+    <Resource Include="Images\wind.png" />
   </ItemGroup>
 
 </Project>

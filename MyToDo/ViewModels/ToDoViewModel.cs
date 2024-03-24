@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using MyToDo.Service;
 using MyToDo.Shared.Dtos;
+using MyToDo.Shared.Parameters;
 using Prism.Commands;
 using Prism.Ioc;
 using Prism.Mvvm;
@@ -22,7 +23,21 @@ namespace MyToDo.ViewModels
             ToDoDtos = new ObservableCollection<ToDoDto>(); // 客户端的使用的是Share下面的类
             ExecuteCommand = new DelegateCommand<string>(Execute);
             SelectedCommand = new DelegateCommand<ToDoDto>(Selected);
+            DeleteCommand = new DelegateCommand<ToDoDto>(Delete);
             this.service = service;
+        }
+
+        private async void Delete(ToDoDto obj)
+        {
+            // 删除数据库的
+            var deleteResult = await service.DeleteAsync(obj.Id);
+            // 删除VM中的
+            if (deleteResult.Status)
+            {
+                var model = ToDoDtos.FirstOrDefault(t => t.Id.Equals(obj.Id));
+                if (model != null)
+                    ToDoDtos.Remove(model);
+            }
         }
 
         private void Execute(string obj)
@@ -38,6 +53,18 @@ namespace MyToDo.ViewModels
                 case "保存": Save(); break;
             }
         }
+
+
+        private int seleteIndex;
+        /// <summary>
+        /// 下拉列表选中状态=值
+        /// </summary>
+        public int SeleteIndex
+        {
+            get { return seleteIndex; }
+            set { seleteIndex = value; RaisePropertyChanged(); }
+        }
+
 
 
 
@@ -158,6 +185,7 @@ namespace MyToDo.ViewModels
 
         public DelegateCommand<string> ExecuteCommand { get; private set; }
         public DelegateCommand<ToDoDto> SelectedCommand { get; private set; }
+        public DelegateCommand<ToDoDto> DeleteCommand { get; private set; }
 
         private ObservableCollection<ToDoDto> toDoDtos;
         private readonly IToDoService service;
@@ -176,11 +204,14 @@ namespace MyToDo.ViewModels
         {
             UpdateLoading(true);    // 打开等待窗口
 
-            var todoResult = await service.GetAllAsync(new Shared.Parameters.QueryParameter()
+            int? Status = SeleteIndex == 0 ? null : SeleteIndex == 2 ? 1 : 0;   // 这个参数是任务的状态
+
+            var todoResult = await service.GetAllFilterAsync(new ToDoParameter()
             {
                 PageIndex = 0,
                 PageSize = 100,
                 Search = Search,    // 这个是查询条件应该
+                Status = Status,
             });
 
             if (todoResult.Status)
