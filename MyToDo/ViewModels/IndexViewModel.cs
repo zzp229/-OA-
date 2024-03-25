@@ -1,4 +1,5 @@
-﻿using MyToDo.Common.Models;
+﻿using MyToDo.Common;
+using MyToDo.Common.Models;
 using MyToDo.Shared.Dtos;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -14,7 +15,7 @@ namespace MyToDo.ViewModels
 {
     public class IndexViewModel : BindableBase
     {
-        public IndexViewModel(IDialogService dialog)    // 注入Prism的接口，方便弹窗
+        public IndexViewModel(IDialogHostService dialog)    // 注入Prism的接口，方便弹窗
         {
             CreateTaskBars();
             TaskBars = new ObservableCollection<TaskBar>();
@@ -47,7 +48,7 @@ namespace MyToDo.ViewModels
 
 
         private ObservableCollection<MemoDto> memoDtos;
-        private readonly IDialogService dialog;
+        private readonly IDialogHostService dialog; // 原本是用Prism带的IDialogService实现弹窗，但是原本的无法实现md样式，自己封装了一下
 
         public ObservableCollection<MemoDto> MemoDtos
         {
@@ -69,7 +70,8 @@ namespace MyToDo.ViewModels
 
         void AddToDo()
         {
-            dialog.ShowDialog("AddToDoView");   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入)
+            // 调用自己的showDialog
+            dialog.ShowDialog("AddToDoView", null);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
         }
 
         void AddMemo()

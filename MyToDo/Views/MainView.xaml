@@ -27,7 +27,7 @@
     <!--好像是要有这一层才能有弹窗-->
     <materialDesign:DialogHost
         DialogTheme="Inherit" x:Name="DialogHost"
-        Identifier="RootDialog"
+        Identifier="Root"
         SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
 
         <materialDesign:DrawerHost x:Name="drawerHost" IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
