@@ -110,14 +110,16 @@
                     <TextBlock
                         FontSize="20"
                         FontWeight="Bold"
-                        Text="代办事项" />
+                        Text="待办事项" />
                     <!--  这个静态资源是让按钮变成圆形  -->
                     <Button
                         Width="30"
                         Height="30"
                         VerticalAlignment="Top"
+                        Command="{Binding ExecuteCommand}"
+                        CommandParameter="新增待办"
                         DockPanel.Dock="Right"
-                        Style="{StaticResource MaterialDesignFloatingActionButton}">
+                        Style="{StaticResource MaterialDesignFloatingActionAccentButton}">
                         <materialDesign:PackIcon Kind="Add" />
                     </Button>
                 </DockPanel>
@@ -169,8 +171,10 @@
                         Width="30"
                         Height="30"
                         VerticalAlignment="Top"
+                        Command="{Binding ExecuteCommand}"
+                        CommandParameter="新增备忘录"
                         DockPanel.Dock="Right"
-                        Style="{StaticResource MaterialDesignFloatingActionButton}">
+                        Style="{StaticResource MaterialDesignFloatingActionAccentButton}">
                         <materialDesign:PackIcon Kind="Add" />
                     </Button>
                 </DockPanel>

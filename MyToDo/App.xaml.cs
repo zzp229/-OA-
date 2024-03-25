@@ -1,7 +1,10 @@
 ﻿using DryIoc;
+using MyToDo.Common;
 using MyToDo.Service;
 using MyToDo.ViewModels;
+using MyToDo.ViewModels.Dialogs;
 using MyToDo.Views;
+using MyToDo.Views.Dialogs;
 using Prism.DryIoc;
 using Prism.Ioc;
 using RestSharp;
@@ -25,6 +28,15 @@ namespace MyToDo
             return Container.Resolve<MainView>();
         }
 
+        protected override void OnInitialized()
+        {
+            // 牛掰，通过这个方式调用这个方法
+            var service = App.Current.MainWindow.DataContext as IConfigureService;
+            if (service != null)
+                service.Configure();
+            base.OnInitialized();
+        }
+
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.GetContainer()
@@ -33,6 +45,9 @@ namespace MyToDo
 
             containerRegistry.Register<IToDoService, ToDoService>();
             containerRegistry.Register<IMemoService, MemoService>();
+
+            containerRegistry.RegisterDialog<AddToDoView, AddToDoViewModel>();  // 注册弹窗
+            containerRegistry.RegisterDialog<AddMemoView, AddMemoViewModel>();
 
             containerRegistry.RegisterForNavigation<AboutView>();
             containerRegistry.RegisterForNavigation<SkinView, SkinViewModel>();
