@@ -29,14 +29,22 @@ namespace MyToDo.ViewModels
 
         private async void Delete(ToDoDto obj)
         {
-            // 删除数据库的
-            var deleteResult = await service.DeleteAsync(obj.Id);
-            // 删除VM中的
-            if (deleteResult.Status)
+            try
             {
-                var model = ToDoDtos.FirstOrDefault(t => t.Id.Equals(obj.Id));
-                if (model != null)
-                    ToDoDtos.Remove(model);
+                UpdateLoading(true);
+                // 删除数据库的
+                var deleteResult = await service.DeleteAsync(obj.Id);
+                // 删除VM中的
+                if (deleteResult.Status)
+                {
+                    var model = ToDoDtos.FirstOrDefault(t => t.Id.Equals(obj.Id));
+                    if (model != null)
+                        ToDoDtos.Remove(model);
+                }
+            }
+            finally
+            {
+                UpdateLoading(false);
             }
         }
 
