@@ -135,7 +135,7 @@
                 <ListBox
                     x:Name="todoList"
                     HorizontalContentAlignment="Stretch"
-                    ItemsSource="{Binding ToDoDtos}"
+                    ItemsSource="{Binding Summary.TodoList}"
                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
 
                     <!--  双击命令  -->
@@ -205,7 +205,7 @@
 
                 <ListBox
                     x:Name="memoList"
-                    ItemsSource="{Binding MemoDtos}"
+                    ItemsSource="{Binding Summary.MemoList}"
                     ScrollViewer.VerticalScrollBarVisibility="Hidden">
 
                     <!--  双击命令  -->

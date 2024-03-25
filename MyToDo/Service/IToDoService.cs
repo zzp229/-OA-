@@ -13,5 +13,8 @@ namespace MyToDo.Service
     public interface IToDoService : IBaseService<ToDoDto>
     {
         Task<ApiResponse<PagedList<ToDoDto>>> GetAllFilterAsync(ToDoParameter parameter);    // 这个的查询增加了一些东西
+
+        Task<ApiResponse<SummaryDto>> SummaryAsync();
     }
+
 }

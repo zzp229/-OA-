@@ -5,6 +5,7 @@ using MyToDo.Shared.Dtos;
 using Prism.Commands;
 using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Regions;
 using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -27,8 +28,6 @@ namespace MyToDo.ViewModels
             IDialogHostService dialog) : base(provider)    // 原本是注入Prism的接口，方便弹窗（这个是自己封装过的）
         {
             CreateTaskBars();
-            ToDoDtos = new ObservableCollection<ToDoDto>();
-            MemoDtos = new ObservableCollection<MemoDto>();
             ExecuteCommand = new DelegateCommand<string>(Execute);
             this.toDoService = provider.Resolve<IToDoService>();    // 构造函数获取Prism的Ioc，再获取出来
             this.memoService = provider.Resolve<IMemoService>();
@@ -43,10 +42,10 @@ namespace MyToDo.ViewModels
             var updateResult = await toDoService.UpdateAsync(obj);
             if (updateResult.Status)
             {
-                var todo = ToDoDtos.FirstOrDefault(t => t.Id.Equals(obj.Id));
+                var todo = summary.TodoList.FirstOrDefault(t => t.Id.Equals(obj.Id));
                 if (todo != null)
                 {
-                    ToDoDtos.Remove(todo);
+                    summary.TodoList.Remove(todo);
                 }
             }
         }
@@ -68,22 +67,14 @@ namespace MyToDo.ViewModels
         }
 
 
-        private ObservableCollection<ToDoDto> toDoDtos;
-
-        public ObservableCollection<ToDoDto> ToDoDtos
+        private SummaryDto summary;
+        /// <summary>
+        /// 首页统计
+        /// </summary>
+        public SummaryDto Summary
         {
-            get { return toDoDtos; }
-            set { toDoDtos = value; RaisePropertyChanged(); }
-        }
-
-
-        private ObservableCollection<MemoDto> memoDtos;
-
-
-        public ObservableCollection<MemoDto> MemoDtos
-        {
-            get { return memoDtos; }
-            set { memoDtos = value; RaisePropertyChanged(); }
+            get { return summary; }
+            set { summary = value; RaisePropertyChanged(); }
         }
 
         #endregion
@@ -119,7 +110,7 @@ namespace MyToDo.ViewModels
                     var updateResult = await toDoService.UpdateAsync(todo);
                     if (updateResult.Status)
                     {
-                        var todoModel = ToDoDtos.FirstOrDefault(t => t.Id.Equals(todo.Id)); // 找出来再更新
+                        var todoModel = summary.TodoList.FirstOrDefault(t => t.Id.Equals(todo.Id)); // 找出来再更新
                         if (todoModel != null)
                         {
                             todoModel.Title = todo.Title;
@@ -132,7 +123,7 @@ namespace MyToDo.ViewModels
                     var addResult = await toDoService.AddAsync(todo);   // 这个返回的多少有点问题，id是0，是我的api有问题
                     if (addResult.Status)
                     {
-                        ToDoDtos.Add(addResult.Result);
+                        summary.TodoList.Add(addResult.Result);
                     }
 
                     // 测试一下这个id
@@ -166,7 +157,7 @@ namespace MyToDo.ViewModels
                     var updateResult = await memoService.UpdateAsync(memo);
                     if (updateResult.Status)
                     {
-                        var todoModel = ToDoDtos.FirstOrDefault(t => t.Id.Equals(memo.Id));
+                        var todoModel = summary.MemoList.FirstOrDefault(t => t.Id.Equals(memo.Id));
                         if (todoModel != null)
                         {
                             todoModel.Title = memo.Title;
@@ -179,7 +170,7 @@ namespace MyToDo.ViewModels
                     var addResult = await memoService.AddAsync(memo);
                     if (addResult.Status)
                     {
-                        MemoDtos.Add(addResult.Result);
+                        summary.MemoList.Add(addResult.Result);
                     }
                 }
             }
@@ -189,10 +180,33 @@ namespace MyToDo.ViewModels
         void CreateTaskBars()
         {
             TaskBars = new ObservableCollection<TaskBar>();
-            TaskBars.Add(new TaskBar() { Icon = "ClockFast", Title = "汇总", Content = "9", Color = "#FF0CA0FF", Target = "" });
-            TaskBars.Add(new TaskBar() { Icon = "ClockCheckOutline", Title = "已完成", Content = "9", Color = "#FF1ECA3A", Target = "" });
-            TaskBars.Add(new TaskBar() { Icon = "ChartLineVariant", Title = "完成比例", Content = "100%", Color = "#FF02C6DC", Target = "" });
-            TaskBars.Add(new TaskBar() { Icon = "PlaylistStar", Title = "备忘录", Content = "19", Color = "#FFFFA000", Target = "" });
+            TaskBars.Add(new TaskBar() { Icon = "ClockFast", Title = "汇总", Color = "#FF0CA0FF", Target = "" });
+            TaskBars.Add(new TaskBar() { Icon = "ClockCheckOutline", Title = "已完成", Color = "#FF1ECA3A", Target = "" });
+            TaskBars.Add(new TaskBar() { Icon = "ChartLineVariant", Title = "完成比例", Color = "#FF02C6DC", Target = "" });
+            TaskBars.Add(new TaskBar() { Icon = "PlaylistStar", Title = "备忘录", Color = "#FFFFA000", Target = "" });
+        }
+
+
+        public override async void OnNavigatedTo(NavigationContext navigationContext)
+        {
+            // 先调用首页统计显示主页上边的数据
+            var summaryResult = await toDoService.SummaryAsync();
+
+            if (summaryResult.Status)
+            {
+                Summary = summaryResult.Result;
+                Refresh();
+            }
+
+            base.OnNavigatedTo(navigationContext);
+        }
+
+        void Refresh()
+        {
+            TaskBars[0].Content = summary.Sum.ToString();
+            TaskBars[1].Content = summary.CompeletedCount.ToString();
+            TaskBars[2].Content = summary.CompletedRatio;
+            TaskBars[3].Content = summary.MemoCount.ToString();
         }
 
 

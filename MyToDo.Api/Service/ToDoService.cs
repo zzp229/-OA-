@@ -3,6 +3,8 @@ using MyToDo.Api.Context;
 using MyToDo.Shared.Dtos;
 using MyToDo.Shared.Parameters;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Threading;
@@ -116,6 +118,36 @@ namespace MyToDo.Api.Service
             catch (Exception ex)
             {
                 return new ApiResponse(ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse> Summary()
+        {
+            try
+            {
+                // 待办事项结果(工作单元中获取)
+                var todos = await work.GetRepository<ToDo>().GetAllAsync(
+                    orderBy: source => source.OrderByDescending(t => t.CreateDate));
+
+                // 备忘录结果
+                var memos = await work.GetRepository<Memo>().GetAllAsync(
+                    orderBy: source => source.OrderByDescending(t => t.CreateDate));
+
+                SummaryDto summary = new SummaryDto();
+
+                summary.Sum = todos.Count();
+                summary.CompeletedCount = todos.Where(t => t.Status == 1).Count();
+                summary.CompletedRatio = (summary.CompeletedCount / (double)summary.Sum).ToString("0%");    // 完成的占一共的
+                summary.MemoCount = memos.Count();
+
+                summary.TodoList = new ObservableCollection<ToDoDto>(Mapper.Map<List<ToDoDto>>(todos.Where(t => t.Status == 0)));
+                summary.MemoList = new ObservableCollection<MemoDto>(Mapper.Map<List<MemoDto>>(memos)); // 使用Mapper将context转换为有属性更改通知的shared属性
+
+                return new ApiResponse(true, summary);
+            }
+            catch (Exception)
+            {
+                return new ApiResponse(false, "");
             }
         }
 
