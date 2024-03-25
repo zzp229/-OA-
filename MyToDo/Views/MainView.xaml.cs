@@ -1,4 +1,6 @@
-﻿using MyToDo.Extensions;
+﻿using DryIoc;
+using MyToDo.Common;
+using MyToDo.Extensions;
 using Prism.Events;
 using System;
 using System.Collections.Generic;
@@ -21,8 +23,9 @@ namespace MyToDo.Views
     /// </summary>
     public partial class MainView : Window
     {
+        private readonly IDialogHostService dialogHostService;
 
-        public MainView(IEventAggregator aggregator) // 构造函数注入了聚合器
+        public MainView(IEventAggregator aggregator, IDialogHostService dialogHostService) // 构造函数注入了聚合器和弹窗服务
         {
             InitializeComponent();
 
@@ -55,8 +58,12 @@ namespace MyToDo.Views
                 else
                     this.WindowState = WindowState.Maximized;
             };
-            btnClose.Click += (s, e) =>
+            btnClose.Click += async (s, e) =>
             {
+                // 弹窗是自己的拓展方法
+                var dialogResult = await dialogHostService.Question("温馨提示", "确认退出系统?"); // 退出应用的时候的弹窗提示
+                if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;  // 取消按钮
+
                 this.Close();
             };
 
@@ -74,6 +81,7 @@ namespace MyToDo.Views
                 else
                     this.WindowState = WindowState.Normal;
             };
+            this.dialogHostService = dialogHostService;
         }
     }
 }

@@ -45,12 +45,14 @@ namespace MyToDo
 
             containerRegistry.Register<IToDoService, ToDoService>();
             containerRegistry.Register<IMemoService, MemoService>();
+            containerRegistry.Register<IDialogHostService, DialogHostService>();
 
             containerRegistry.RegisterForNavigation<AddToDoView, AddToDoViewModel>();  // 注册弹窗，这个是自己封装的就只需要Navigation而不是Dialog（任何方式添加到容器都可以）
             containerRegistry.RegisterForNavigation<AddMemoView, AddMemoViewModel>();
-            containerRegistry.Register<IDialogHostService, DialogHostService>();
+
 
             containerRegistry.RegisterForNavigation<AboutView>();
+            containerRegistry.RegisterForNavigation<MsgView, MsgViewModel>();
             containerRegistry.RegisterForNavigation<SkinView, SkinViewModel>();
             containerRegistry.RegisterForNavigation<IndexView, IndexViewModel>();
             containerRegistry.RegisterForNavigation<ToDoView, ToDoViewModel>();

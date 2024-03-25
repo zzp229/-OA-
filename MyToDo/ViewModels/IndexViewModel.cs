@@ -15,7 +15,7 @@ namespace MyToDo.ViewModels
 {
     public class IndexViewModel : BindableBase
     {
-        public IndexViewModel(IDialogHostService dialog)    // 注入Prism的接口，方便弹窗
+        public IndexViewModel(IDialogHostService dialog)    // 原本是注入Prism的接口，方便弹窗（这个是自己封装过的）
         {
             CreateTaskBars();
             TaskBars = new ObservableCollection<TaskBar>();
@@ -76,7 +76,7 @@ namespace MyToDo.ViewModels
 
         void AddMemo()
         {
-            dialog.ShowDialog("AddMemoView");
+            dialog.ShowDialog("AddMemoView", null);
         }
 
 

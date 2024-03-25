@@ -1,4 +1,7 @@
-﻿using MyToDo.Service;
+﻿using MaterialDesignThemes.Wpf;
+using MyToDo.Common;
+using MyToDo.Extensions;
+using MyToDo.Service;
 using MyToDo.Shared.Dtos;
 using MyToDo.Shared.Parameters;
 using Prism.Commands;
@@ -16,6 +19,7 @@ namespace MyToDo.ViewModels
 {
     public class MemoViewModel : NavigationViewModel
     {
+        private readonly IDialogHostService dialogHost;
         public MemoViewModel(IMemoService service, IContainerProvider provider)
             : base(provider)
         {
@@ -23,6 +27,7 @@ namespace MyToDo.ViewModels
             ExecuteCommand = new DelegateCommand<string>(Execute);
             SelectedCommand = new DelegateCommand<MemoDto>(Selected);
             DeleteCommand = new DelegateCommand<MemoDto>(Delete);
+            dialogHost = provider.Resolve<IDialogHostService>();    // 从Prism的容器中取出来
             this.service = service;
         }
 
@@ -30,6 +35,10 @@ namespace MyToDo.ViewModels
         {
             try
             {
+                // 弹窗是自己的拓展方法
+                var dialogResult = await dialogHost.Question("温馨提示", "确认退出系统?"); // 退出应用的时候的弹窗提示
+                if (dialogResult.Result != Prism.Services.Dialogs.ButtonResult.OK) return;  // 取消按钮
+
                 UpdateLoading(true);
                 // 删除数据库的
                 var deleteResult = await service.DeleteAsync(obj.Id);   // 这个调用到ToDo里面去了好像
