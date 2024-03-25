@@ -67,7 +67,7 @@ namespace MyToDo.ViewModels.Dialogs
         {
             if (parameters.ContainsKey("Value"))    // 判断有没有给这个弹窗提供参数
             {
-                Model = parameters.GetValue<ToDoDto>("Value");
+                Model = parameters.GetValue<ToDoDto>("Value");  // 有值就将值赋给VM中的属性
             }
             else
             {

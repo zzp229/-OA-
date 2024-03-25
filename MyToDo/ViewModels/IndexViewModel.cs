@@ -33,8 +33,28 @@ namespace MyToDo.ViewModels
             this.toDoService = provider.Resolve<IToDoService>();    // 构造函数获取Prism的Ioc，再获取出来
             this.memoService = provider.Resolve<IMemoService>();
             this.dialog = dialog;
+            EditMemoCommand = new DelegateCommand<MemoDto>(AddMemo);
+            EditToDoCommand = new DelegateCommand<ToDoDto>(AddToDo);
+            ToDoCompeletedCommand = new DelegateCommand<ToDoDto>(Completed);
         }
 
+        private async void Completed(ToDoDto obj)
+        {
+            var updateResult = await toDoService.UpdateAsync(obj);
+            if (updateResult.Status)
+            {
+                var todo = ToDoDtos.FirstOrDefault(t => t.Id.Equals(obj.Id));
+                if (todo != null)
+                {
+                    ToDoDtos.Remove(todo);
+                }
+            }
+        }
+
+        // 暂时的作用好像就是更新状态
+        public DelegateCommand<ToDoDto> ToDoCompeletedCommand { get; private set; }
+        public DelegateCommand<ToDoDto> EditToDoCommand { get; private set; }
+        public DelegateCommand<MemoDto> EditMemoCommand { get; private set; }
         public DelegateCommand<string> ExecuteCommand { get; private set; }
 
         #region 属性
@@ -72,8 +92,8 @@ namespace MyToDo.ViewModels
         {
             switch (obj)
             {
-                case "新增待办": AddToDo(); break;
-                case "新增备忘录": AddMemo(); break;
+                case "新增待办": AddToDo(null); break;
+                case "新增备忘录": AddMemo(null); break;
             }
         }
 
@@ -81,26 +101,47 @@ namespace MyToDo.ViewModels
         /// <summary>
         /// 添加待办事项
         /// </summary>
-        async void AddToDo()
+        async void AddToDo(ToDoDto model)
         {
+            DialogParameters param = new DialogParameters();
+            if (model != null)
+                param.Add("Value", model);  // 非空就添加到窗体参数，后面就是调出
+
             // 调用自己的showDialog
-            var dialogResult = await dialog.ShowDialog("AddToDoView", null);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
+            var dialogResult = await dialog.ShowDialog("AddToDoView", param);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
             if (dialogResult.Result == ButtonResult.OK)
             {
                 var todo = dialogResult.Parameters.GetValue<ToDoDto>("Value");  // 弹窗中获取的参数
 
-                // 这个如果是0的话就是新增
-                if (todo.Id > 0)   // 新增就只是添加标题和内容，BaseDto里面的id就没有修改过
+                // 修改id做标记，这个是修改
+                if (todo.Id > 0)
                 {
-
+                    var updateResult = await toDoService.UpdateAsync(todo);
+                    if (updateResult.Status)
+                    {
+                        var todoModel = ToDoDtos.FirstOrDefault(t => t.Id.Equals(todo.Id)); // 找出来再更新
+                        if (todoModel != null)
+                        {
+                            todoModel.Title = todo.Title;
+                            todoModel.Content = todo.Content;
+                        }
+                    }
                 }
-                else
+                else // 新增
                 {
-                    var addResult = await toDoService.AddAsync(todo);
+                    var addResult = await toDoService.AddAsync(todo);   // 这个返回的多少有点问题，id是0，是我的api有问题
                     if (addResult.Status)
                     {
                         ToDoDtos.Add(addResult.Result);
                     }
+
+                    // 测试一下这个id
+                    //var addResult = await toDoService.AddAsync(new ToDoDto { Content = "123", Id = 55, Status = 1, Title = "test" });   // 这个返回的多少有点问题，id是0
+                    //if (addResult.Status)
+                    //{
+
+                    //    ToDoDtos.Add(addResult.Result);
+                    //}
                 }
             }
         }
@@ -108,17 +149,30 @@ namespace MyToDo.ViewModels
         /// <summary>
         /// 添加备忘录
         /// </summary>
-        async void AddMemo()
+        async void AddMemo(MemoDto model)
         {
+            DialogParameters param = new DialogParameters();
+            if (model != null)
+                param.Add("Value", model);  // 不是空就添加到窗体参数
+
             // 调用自己的showDialog
-            var dialogResult = await dialog.ShowDialog("AddMemoView", null);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
+            var dialogResult = await dialog.ShowDialog("AddMemoView", param);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
             if (dialogResult.Result == ButtonResult.OK)
             {
                 var memo = dialogResult.Parameters.GetValue<MemoDto>("Value");  // 弹窗中获取的参数
 
                 if (memo.Id > 0)
                 {
-
+                    var updateResult = await memoService.UpdateAsync(memo);
+                    if (updateResult.Status)
+                    {
+                        var todoModel = ToDoDtos.FirstOrDefault(t => t.Id.Equals(memo.Id));
+                        if (todoModel != null)
+                        {
+                            todoModel.Title = memo.Title;
+                            todoModel.Content = memo.Content;
+                        }
+                    }
                 }
                 else
                 {

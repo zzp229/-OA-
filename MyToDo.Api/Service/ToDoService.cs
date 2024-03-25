@@ -36,7 +36,7 @@ namespace MyToDo.Api.Service
                 var todo = Mapper.Map<ToDo>(model); //将ToDoDto转换为ToDo（响应数据类转换为数据库相关类）
                 await work.GetRepository<ToDo>().InsertAsync(todo);
                 if (await work.SaveChangesAsync() > 0)
-                    return new ApiResponse(true, model);
+                    return new ApiResponse(true, todo); /// 这里的todo写成了model导致没有返回正确的添加数据
                 return new ApiResponse(false, "添加数据失败");
             }
             catch (Exception ex)
@@ -44,6 +44,7 @@ namespace MyToDo.Api.Service
                 return new ApiResponse(ex.Message);
             }
         }
+
 
         public async Task<ApiResponse> DeleteAsync(int id)
         {
