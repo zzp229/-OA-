@@ -2,6 +2,7 @@
 using MyToDo.Common.Models;
 using MyToDo.Extensions;
 using Prism.Commands;
+using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Regions;
 using System;
@@ -15,7 +16,18 @@ namespace MyToDo.ViewModels
 {
     public class MainViewModel : BindableBase, IConfigureService
     {
-        public MainViewModel(IRegionManager regionManager)
+        private string userName;
+
+        public string UserName
+        {
+            get { return userName; }
+            set { userName = value; RaisePropertyChanged(); }
+        }
+
+        public DelegateCommand LoginOutCommand { get; private set; }
+
+        public MainViewModel(IContainerProvider containerProvider,
+            IRegionManager regionManager)
         {
             MenuBars = new ObservableCollection<MenuBar>();
             NavigateCommand = new DelegateCommand<MenuBar>(Navigate);
@@ -24,12 +36,17 @@ namespace MyToDo.ViewModels
                 if (journal != null && journal.CanGoBack)
                     journal.GoBack();
             });
-
             GoForwardCommand = new DelegateCommand(() =>
             {
                 if (journal != null && journal.CanGoForward)
                     journal.GoForward();
             });
+            LoginOutCommand = new DelegateCommand(() =>
+            {
+                //注销当前用户
+                App.LoginOut(containerProvider);
+            });
+            this.containerProvider = containerProvider;
             this.regionManager = regionManager;
         }
 
@@ -40,17 +57,17 @@ namespace MyToDo.ViewModels
 
             regionManager.Regions[PrismManager.MainViewRegionName].RequestNavigate(obj.NameSpace, back =>
             {
-                journal = back.Context.NavigationService.Journal;   // 导航日志
+                journal = back.Context.NavigationService.Journal;
             });
         }
 
         public DelegateCommand<MenuBar> NavigateCommand { get; private set; }
-        // 路由返回按钮
         public DelegateCommand GoBackCommand { get; private set; }
         public DelegateCommand GoForwardCommand { get; private set; }
 
         private ObservableCollection<MenuBar> menuBars;
-        private readonly IRegionManager regionManager;  // 区域导航
+        private readonly IContainerProvider containerProvider;
+        private readonly IRegionManager regionManager;
         private IRegionNavigationJournal journal;
 
         public ObservableCollection<MenuBar> MenuBars
@@ -59,9 +76,9 @@ namespace MyToDo.ViewModels
             set { menuBars = value; RaisePropertyChanged(); }
         }
 
+
         void CreateMenuBar()
         {
-            // Icon是在md应用库里面的名称
             MenuBars.Add(new MenuBar() { Icon = "Home", Title = "首页", NameSpace = "IndexView" });
             MenuBars.Add(new MenuBar() { Icon = "NotebookOutline", Title = "待办事项", NameSpace = "ToDoView" });
             MenuBars.Add(new MenuBar() { Icon = "NotebookPlus", Title = "备忘录", NameSpace = "MemoView" });
@@ -73,6 +90,7 @@ namespace MyToDo.ViewModels
         /// </summary>
         public void Configure()
         {
+            UserName = AppSession.UserName;
             CreateMenuBar();
             regionManager.Regions[PrismManager.MainViewRegionName].RequestNavigate("IndexView");
         }

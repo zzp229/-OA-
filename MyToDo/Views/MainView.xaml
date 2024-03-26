@@ -13,8 +13,8 @@
     Width="1280"
     Height="768"
     prism:ViewModelLocator.AutoWireViewModel="True"
-    AllowsTransparency="False"
-    Background="{DynamicResource MaterialDesign.Brush.Background}"
+    AllowsTransparency="True"
+    Background="{DynamicResource MaterialDesignPaper}"
     FontFamily="微软雅黑"
     TextElement.FontSize="13"
     TextElement.FontWeight="Regular"
@@ -24,12 +24,9 @@
     WindowStartupLocation="CenterScreen"
     WindowStyle="None"
     mc:Ignorable="d">
-    <!--  好像是要有这一层才能有弹窗  -->
     <materialDesign:DialogHost
-        x:Name="DialogHost"
-        DialogTheme="Inherit"
-        Identifier="Root">
-
+        DialogTheme="Inherit"  x:Name="DialogHost"
+        Identifier="Root" >
         <materialDesign:DrawerHost x:Name="drawerHost" IsLeftDrawerOpen="{Binding ElementName=MenuToggleButton, Path=IsChecked}">
             <materialDesign:DrawerHost.LeftDrawerContent>
                 <DockPanel MinWidth="220">
@@ -40,7 +37,7 @@
                             Source="/Images/user.jpg">
                             <Image.Clip>
                                 <EllipseGeometry
-                                    Center="25, 25"
+                                    Center="25,25"
                                     RadiusX="25"
                                     RadiusY="25" />
                             </Image.Clip>
@@ -48,7 +45,7 @@
                         <TextBlock
                             Margin="0,10"
                             HorizontalAlignment="Center"
-                            Text="樊桦" />
+                            Text="{Binding UserName}" />
                     </StackPanel>
 
                     <ListBox
@@ -56,17 +53,14 @@
                         ItemContainerStyle="{StaticResource MyListBoxItemStyle}"
                         ItemsSource="{Binding MenuBars}">
                         <i:Interaction.Triggers>
-                            <!--  这个SelectionChanged是ListBox的事件  -->
                             <i:EventTrigger EventName="SelectionChanged">
-                                <i:InvokeCommandAction Command="{Binding NavigateCommand}" CommandParameter="{Binding ElementName=menuBar, Path=SelectedItem}" />
+                                <i:InvokeCommandAction Command="{Binding NavigateCommand}" 
+                                                       CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ListBox}}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel
-                                    VerticalAlignment="Center"
-                                    Background="Transparent"
-                                    Orientation="Horizontal">
+                                <StackPanel Background="Transparent" Orientation="Horizontal" VerticalAlignment="Center">
                                     <materialDesign:PackIcon Margin="15,0" Kind="{Binding Icon}" />
                                     <TextBlock Margin="10,0" Text="{Binding Title}" />
                                 </StackPanel>
@@ -78,45 +72,55 @@
             </materialDesign:DrawerHost.LeftDrawerContent>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition />
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
-                <!--  全局通知的消息队列  -->
-                <materialDesign:Snackbar x:Name="Snackbar" Panel.ZIndex="1" MessageQueue="{materialDesign:MessageQueue}" />
+
+                <materialDesign:Snackbar x:Name="Snackbar" Panel.ZIndex="1" MessageQueue="{materialDesign:MessageQueue}"/>
                 <materialDesign:ColorZone
                     x:Name="ColorZone"
-                    Padding="0"
-                    materialDesign:ElevationAssist.Elevation="Dp4"
+                    Padding="16"
+                    materialDesign:ShadowAssist.ShadowDepth="Depth2"
                     DockPanel.Dock="Top"
                     Mode="PrimaryMid">
                     <DockPanel LastChildFill="True">
                         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
-
-                            <Image
-                                Width="25"
-                                Height="25"
-                                Source="/Images/user.jpg">
-                                <Image.Clip>
-                                    <EllipseGeometry
-                                        Center="12.5, 12.5"
-                                        RadiusX="12.5"
-                                        RadiusY="12.5" />
-                                </Image.Clip>
-                            </Image>
-
                             <Button
                                 x:Name="btnMin"
-                                Content="─"
+                                Content="—"
                                 Style="{StaticResource MaterialDesignFlatMidBgButton}" />
                             <Button
                                 x:Name="btnMax"
-                                Content="⬜"
+                                Content="☐"
                                 Style="{StaticResource MaterialDesignFlatMidBgButton}" />
                             <Button
                                 x:Name="btnClose"
-                                Content="⨉"
+                                Content="✕"
                                 Style="{StaticResource MaterialDesignFlatMidBgButton}" />
                         </StackPanel>
+
+                        <materialDesign:PopupBox DockPanel.Dock="Right">
+                            <materialDesign:PopupBox.ToggleContent>
+                                <Image
+                                Width="25"
+                                Height="25"
+                                Source="/Images/user.jpg">
+                                    <Image.Clip>
+                                        <EllipseGeometry
+                                        Center="12.5,12.5"
+                                        RadiusX="12.5"
+                                        RadiusY="12.5" />
+                                    </Image.Clip>
+                                </Image>
+                            </materialDesign:PopupBox.ToggleContent>
+
+                            <StackPanel>
+                                <!--<Button Command="{Binding AppCenterCommand}" Content="个人中心"/>-->
+                                <Button Command="{Binding LoginOutCommand}" Content="注销当前账户"/>
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+
+
 
                         <StackPanel Orientation="Horizontal">
                             <ToggleButton
@@ -132,7 +136,7 @@
                                 Content="{materialDesign:PackIcon Kind=ArrowLeft,
                                                                   Size=24}"
                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                Style="{StaticResource MaterialDesignToolButton}"
+                                Style="{DynamicResource MaterialDesignToolButton}"
                                 ToolTip="Previous Item" />
 
                             <Button
@@ -142,7 +146,7 @@
                                 Content="{materialDesign:PackIcon Kind=ArrowRight,
                                                                   Size=24}"
                                 Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
-                                Style="{StaticResource MaterialDesignToolButton}"
+                                Style="{DynamicResource MaterialDesignToolButton}"
                                 ToolTip="Next Item" />
 
                             <TextBlock
@@ -161,4 +165,3 @@
         </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
 </Window>
-

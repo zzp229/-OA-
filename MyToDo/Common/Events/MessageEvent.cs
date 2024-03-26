@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyToDo.Common.Events
 {
-    public class MessageEvent : PubSubEvent<string> // Prism的接口实现全局通知
-    {
-    }
+    //public class MessageEvent : PubSubEvent<string> // Prism的接口实现全局通知
+    //{
+    //}
 }
