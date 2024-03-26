@@ -35,6 +35,7 @@ namespace MyToDo.Extensions
             return dialogResult;
         }
 
+        // 订阅的是行为，发布的是调控行为的信息
         /// <summary>
         /// 推送等待消息
         /// </summary>
@@ -53,6 +54,27 @@ namespace MyToDo.Extensions
         public static void Resgiter(this IEventAggregator aggregator, Action<UpdateModel> action)
         {
             aggregator.GetEvent<UpdateLoadingEvent>().Subscribe(action);
+        }
+
+        /// <summary>
+        /// 这个是实现全局消息
+        /// 注册提示消息事件
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="action"></param>
+        public static void ResgiterMessage(this IEventAggregator aggregator, Action<string> action)
+        {
+            aggregator.GetEvent<MessageEvent>().Subscribe(action);
+        }
+
+        /// <summary>
+        /// 发送提示消息
+        /// </summary>
+        /// <param name="aggregator"></param>
+        /// <param name="message"></param>
+        public static void SendMessage(this IEventAggregator aggregator, string message)
+        {
+            aggregator.GetEvent<MessageEvent>().Publish(message);
         }
     }
 }

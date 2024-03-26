@@ -42,6 +42,7 @@ namespace MyToDo.ViewModels
 
         /// <summary>
         /// 加载动画
+        /// 订阅这里更改会影响发布的，给订阅推送消息
         /// </summary>
         /// <param name="IsOpen"></param>
         public void UpdateLoading(bool IsOpen)

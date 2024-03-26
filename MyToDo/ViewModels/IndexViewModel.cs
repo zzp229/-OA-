@@ -57,18 +57,30 @@ namespace MyToDo.ViewModels
 
         private async void Completed(ToDoDto obj)
         {
-            var updateResult = await toDoService.UpdateAsync(obj);
-            if (updateResult.Status)
+            try
             {
-                var todo = summary.TodoList.FirstOrDefault(t => t.Id.Equals(obj.Id));
-                if (todo != null)
+                UpdateLoading(true);
+                var updateResult = await toDoService.UpdateAsync(obj);
+                if (updateResult.Status)
                 {
-                    summary.TodoList.Remove(todo);
-                    summary.CompeletedCount += 1;   // 待办已完成后也要更新数据
-                    summary.CompletedRatio = (summary.CompeletedCount / (double)summary.Sum).ToString("0%");
-                    this.Refresh();
+                    var todo = summary.TodoList.FirstOrDefault(t => t.Id.Equals(obj.Id));
+                    if (todo != null)
+                    {
+                        summary.TodoList.Remove(todo);
+                        summary.CompeletedCount += 1;   // 待办已完成后也要更新数据
+                        summary.CompletedRatio = (summary.CompeletedCount / (double)summary.Sum).ToString("0%");
+                        this.Refresh();
+                    }
+
+                    // 发布的内容就是这个
+                    aggregator.SendMessage("已完成!");  // 将消息发送给MainView
                 }
             }
+            finally
+            {
+                UpdateLoading(false);
+            }
+
         }
 
         // 暂时的作用好像就是更新状态
@@ -133,42 +145,51 @@ namespace MyToDo.ViewModels
             var dialogResult = await dialog.ShowDialog("AddToDoView", param);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
             if (dialogResult.Result == ButtonResult.OK)
             {
-                var todo = dialogResult.Parameters.GetValue<ToDoDto>("Value");  // 弹窗中获取的参数
-
-                // 修改id做标记，这个是修改
-                if (todo.Id > 0)
+                try
                 {
-                    var updateResult = await toDoService.UpdateAsync(todo);
-                    if (updateResult.Status)
+                    UpdateLoading(true);
+                    var todo = dialogResult.Parameters.GetValue<ToDoDto>("Value");  // 弹窗中获取的参数
+
+                    // 修改id做标记，这个是修改
+                    if (todo.Id > 0)
                     {
-                        var todoModel = summary.TodoList.FirstOrDefault(t => t.Id.Equals(todo.Id)); // 找出来再更新
-                        if (todoModel != null)
+                        var updateResult = await toDoService.UpdateAsync(todo);
+                        if (updateResult.Status)
                         {
-                            todoModel.Title = todo.Title;
-                            todoModel.Content = todo.Content;
+                            var todoModel = summary.TodoList.FirstOrDefault(t => t.Id.Equals(todo.Id)); // 找出来再更新
+                            if (todoModel != null)
+                            {
+                                todoModel.Title = todo.Title;
+                                todoModel.Content = todo.Content;
+                            }
                         }
                     }
-                }
-                else // 新增
-                {
-                    var addResult = await toDoService.AddAsync(todo);   // 这个返回的多少有点问题，id是0，是我的api有问题
-                    if (addResult.Status)
+                    else // 新增
                     {
-                        summary.Sum += 1;
-                        summary.TodoList.Add(addResult.Result);
-                        // 新增后更新一下数据
-                        summary.CompletedRatio = (summary.CompeletedCount / (double)summary.Sum).ToString("0%");
-                        this.Refresh();
+                        var addResult = await toDoService.AddAsync(todo);   // 这个返回的多少有点问题，id是0，是我的api有问题
+                        if (addResult.Status)
+                        {
+                            summary.Sum += 1;
+                            summary.TodoList.Add(addResult.Result);
+                            // 新增后更新一下数据
+                            summary.CompletedRatio = (summary.CompeletedCount / (double)summary.Sum).ToString("0%");
+                            this.Refresh();
+                        }
+
+                        // 测试一下这个id
+                        //var addResult = await toDoService.AddAsync(new ToDoDto { Content = "123", Id = 55, Status = 1, Title = "test" });   // 这个返回的多少有点问题，id是0
+                        //if (addResult.Status)
+                        //{
+
+                        //    ToDoDtos.Add(addResult.Result);
+                        //}
                     }
-
-                    // 测试一下这个id
-                    //var addResult = await toDoService.AddAsync(new ToDoDto { Content = "123", Id = 55, Status = 1, Title = "test" });   // 这个返回的多少有点问题，id是0
-                    //if (addResult.Status)
-                    //{
-
-                    //    ToDoDtos.Add(addResult.Result);
-                    //}
                 }
+                finally
+                {
+                    UpdateLoading(false);
+                }
+
             }
         }
 
@@ -185,29 +206,38 @@ namespace MyToDo.ViewModels
             var dialogResult = await dialog.ShowDialog("AddMemoView", param);   // 直接就可以获取弹窗(这个弹窗需要在app.xaml中依赖注入) 弹窗的文件夹要放到Dialogs文件夹下面
             if (dialogResult.Result == ButtonResult.OK)
             {
-                var memo = dialogResult.Parameters.GetValue<MemoDto>("Value");  // 弹窗中获取的参数
-
-                if (memo.Id > 0)
+                try
                 {
-                    var updateResult = await memoService.UpdateAsync(memo);
-                    if (updateResult.Status)
+                    UpdateLoading(true);
+                    var memo = dialogResult.Parameters.GetValue<MemoDto>("Value");  // 弹窗中获取的参数
+
+                    if (memo.Id > 0)
                     {
-                        var todoModel = summary.MemoList.FirstOrDefault(t => t.Id.Equals(memo.Id));
-                        if (todoModel != null)
+                        var updateResult = await memoService.UpdateAsync(memo);
+                        if (updateResult.Status)
                         {
-                            todoModel.Title = memo.Title;
-                            todoModel.Content = memo.Content;
+                            var todoModel = summary.MemoList.FirstOrDefault(t => t.Id.Equals(memo.Id));
+                            if (todoModel != null)
+                            {
+                                todoModel.Title = memo.Title;
+                                todoModel.Content = memo.Content;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var addResult = await memoService.AddAsync(memo);
+                        if (addResult.Status)
+                        {
+                            summary.MemoList.Add(addResult.Result);
                         }
                     }
                 }
-                else
+                finally
                 {
-                    var addResult = await memoService.AddAsync(memo);
-                    if (addResult.Status)
-                    {
-                        summary.MemoList.Add(addResult.Result);
-                    }
+                    UpdateLoading(false);
                 }
+
             }
         }
 

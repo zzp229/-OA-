@@ -29,14 +29,22 @@ namespace MyToDo.Views
         {
             InitializeComponent();
 
+            // 使用拓展方法注册消息（其实就是一个委托方便调用该方法将消息加到消息队列）
+            // 注册的行为就是将消息添加到消息队列
+            aggregator.ResgiterMessage(arg =>
+            {
+                Snackbar.MessageQueue.Enqueue(arg);
+            });
+
             // 这个聚合器是调整加载的
             // 注册等待消息窗口
+            // 注册了这个消息窗口，需要用的时候就在全局都可以调用它了，更改它的IsOpen属性就可以调控要不要显示了
             aggregator.Resgiter(arg =>
             {
                 DialogHost.IsOpen = arg.IsOpen; // 这个应该是侧边栏
 
                 if (DialogHost.IsOpen)
-                    DialogHost.DialogContent = new ProgressView();  // 加载动画用户控件
+                    DialogHost.DialogContent = new ProgressView();  // 加载动画用户控件 (就是注册了md库中的对话框，用来显示动图而已)
             });
 
             // 点击进入页面了就关闭左侧小弹窗
