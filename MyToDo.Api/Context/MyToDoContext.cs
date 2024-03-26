@@ -12,5 +12,6 @@ namespace MyToDo.Api.Context
         public DbSet<ToDo> ToDo { get; set; }
         public DbSet<User> User { get; set; }
         public DbSet<Memo> Memo { get; set; }
+        public DbSet<OA_api> oA_Api { get; set; }
     }
 }

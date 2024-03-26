@@ -1,11 +1,8 @@
 ﻿namespace MyToDo.Api.Context
 {
-    public class OA_api
+    public class OA_api : BaseEntity
     {
-        public int Id { get; set; }
-        public string Remark { get; set; }
         public decimal All { get; set; }
         public decimal speet { get; set; }
-
     }
 }

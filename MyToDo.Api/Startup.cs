@@ -40,7 +40,8 @@ namespace MyToDo.Api
             }).AddUnitOfWork<MyToDoContext>()
             .AddCustomRepository<ToDo, ToDoRepository>()
             .AddCustomRepository<Memo, MemoRepository>()
-            .AddCustomRepository<User, UserRepository>();  // 后面这个是工作单元
+            .AddCustomRepository<User, UserRepository>()
+            .AddCustomRepository<OA_api, OA_apiRepository>();  // 后面这个是工作单元
 
             services.AddTransient<IToDoService, ToDoService>(); // 这个是待办事项的服务
             services.AddTransient<IMemoService, MemoService>(); // 注入备忘录服务
