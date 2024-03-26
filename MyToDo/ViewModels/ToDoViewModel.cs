@@ -249,11 +249,16 @@ namespace MyToDo.ViewModels
 
         /// <summary>
         /// 这里重写作用就是导航过去就加载数据
+        /// 导航过来的时候带上个状态（方便主页的已完成点击过来直接获取对应数据）
         /// </summary>
         /// <param name="navigationContext"></param>
         public override void OnNavigatedTo(NavigationContext navigationContext)
         {
             base.OnNavigatedTo(navigationContext);
+            if (navigationContext.Parameters.ContainsKey("Value"))
+                SeleteIndex = navigationContext.Parameters.GetValue<int>("Value");  // DialogResult中可以这样获取，这里的NavigationContext也可以
+            else
+                SeleteIndex = 0;
             GetDataAsync();
         }
 

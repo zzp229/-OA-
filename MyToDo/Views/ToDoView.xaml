@@ -89,8 +89,14 @@
                         VerticalAlignment="Center"
                         Text="筛选：" />
                     <ComboBox SelectedIndex="{Binding SeleteIndex}">
+                        <!--增加ComboBox修改选择就触发查询命令-->
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding ExecuteCommand}" CommandParameter="查询"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <ComboBoxItem>全部</ComboBoxItem>
-                        <ComboBoxItem>代办</ComboBoxItem>
+                        <ComboBoxItem>待办</ComboBoxItem>
                         <ComboBoxItem>已完成</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
