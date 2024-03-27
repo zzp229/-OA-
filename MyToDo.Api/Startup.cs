@@ -12,6 +12,7 @@ using MyToDo.Api.Context;
 using MyToDo.Api.Context.Repository;
 using MyToDo.Api.Extensions;
 using MyToDo.Api.Service;
+using MyToDo.Api.Service.OA_Service;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,6 +47,7 @@ namespace MyToDo.Api
             services.AddTransient<IToDoService, ToDoService>(); // 这个是待办事项的服务
             services.AddTransient<IMemoService, MemoService>(); // 注入备忘录服务
             services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<IOA_apiService, OA_apiService>();
 
             // 注入AutoMapper的服务
             var automapperConfog = new MapperConfiguration(config =>

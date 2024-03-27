@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MyToDo.Api.Service;
-using MyToDo.Api.Service.OA_api;
+using MyToDo.Api.Service.OA_Service;
 using System.Threading.Tasks;
 
 namespace MyToDo.Api.Controllers
@@ -16,9 +16,12 @@ namespace MyToDo.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ApiResponse> Get(int id)
-        {
-            return null;
-        }
+        public async Task<ApiResponse> GetMoneyAll() => await service.GetMoneyAll();
+
+        [HttpGet]
+        public async Task<ApiResponse> FixMoneyAll(decimal moneyAll) => await service.FixMoneyAll(moneyAll);
+
+        [HttpGet]
+        public async Task<ApiResponse> FixMoneySpeet(decimal moneySpeet) => await service.FixMoneySpeet(moneySpeet);
     }
 }
