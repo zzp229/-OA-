@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using MySql.Data.MySqlClient;
 using MyToDo.Api.Context;
 using MyToDo.Api.Context.Repository;
 using MyToDo.Api.Extensions;
@@ -25,6 +26,40 @@ namespace MyToDo.Api
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            //test();
+        }
+
+        // 试一下从mySql数据库中获取数据
+        public void test()
+        {
+            string connStr = "server=175.178.166.212;user=root;database=oadb;port=3306;password=h20021023;charset=utf8;SslMode=none;";
+
+            try
+            {
+                using (var conn = new MySqlConnection(connStr))
+                {
+                    conn.Open();
+
+                    string sql = "SELECT * FROM sys_dept"; // 替换YourTableName为您的表名
+                    using (var cmd = new MySqlCommand(sql, conn))
+                    {
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var tmp = reader["dept_name"].ToString();
+                                //Console.WriteLine(reader["dept_name"].ToString()); // 替换ColumnName为您的列名
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+            Console.ReadLine();
         }
 
         public IConfiguration Configuration { get; }
@@ -67,12 +102,14 @@ namespace MyToDo.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // 这个是在开发环境下的
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyToDo.Api v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyToDo.Api v1"));
 
             app.UseRouting();
 
@@ -81,6 +118,7 @@ namespace MyToDo.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapSwagger();
             });
         }
     }
