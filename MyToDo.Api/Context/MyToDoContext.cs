@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyToDo.Api.Context.Mail;
 
 namespace MyToDo.Api.Context
 {
@@ -13,5 +14,6 @@ namespace MyToDo.Api.Context
         public DbSet<User> User { get; set; }
         public DbSet<Memo> Memo { get; set; }
         public DbSet<OA_api> oA_Api { get; set; }
+
     }
 }

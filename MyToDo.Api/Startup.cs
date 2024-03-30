@@ -10,10 +10,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MySql.Data.MySqlClient;
 using MyToDo.Api.Context;
+using MyToDo.Api.Context.Mail;
 using MyToDo.Api.Context.Repository;
 using MyToDo.Api.Extensions;
 using MyToDo.Api.Service;
 using MyToDo.Api.Service.OA_Service;
+using MyToDo.Api.Service.OA_Service.Mail_interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,19 +86,33 @@ namespace MyToDo.Api
             services.AddTransient<ILoginService, LoginService>();
             services.AddTransient<IOA_apiService, OA_apiService>();
 
-            // 注入AutoMapper的服务
+
+
+            // 添加一个MySql的
+            services.AddDbContext<MailMySqlContext>(options =>
+            {
+                var mysqlConnectionString = Configuration.GetConnectionString("MySqlConnection");
+                options.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString));
+            }).AddUnitOfWork<MailMySqlContext>()
+            .AddCustomRepository<MailTest, MailTestRepository>();
+            services.AddTransient<IMailTestService, MailTestService>();
+            services.AddTransient<ISysUserService, SysUserService>();
+
+
+
+
             var automapperConfog = new MapperConfiguration(config =>
             {
                 config.AddProfile(new AutoMapperProFile());
-            });
+            }); // 注入AutoMapper的服务
 
-            services.AddSingleton(automapperConfog.CreateMapper());
+            services.AddSingleton(automapperConfog.CreateMapper()); // Mapper服务
 
-            services.AddControllers();
+            services.AddControllers();  // Controllers服务
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyToDo.Api", Version = "v1" });
-            });
+            }); // Swagger服务
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
