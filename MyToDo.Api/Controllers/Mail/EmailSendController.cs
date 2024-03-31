@@ -17,7 +17,8 @@ namespace MyToDo.Api.Controllers.Mail
     /// 发送邮箱Controller
     /// </summary>
     [ApiController]
-    [Route("[controller]")]
+    //[Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class EmailSendController : Controller
     {
         private readonly IEmailService service;
@@ -34,7 +35,7 @@ namespace MyToDo.Api.Controllers.Mail
         /// <param name="email">邮箱</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ApiResponse> EmailSend([FromBody] EmailDto emailDto) => await service.MailSend(emailDto);
+        public async Task<ApiResponse> Send([FromBody] EmailDto emailDto) => await service.MailSend(emailDto);
 
 
     }

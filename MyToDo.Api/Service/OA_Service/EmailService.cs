@@ -21,6 +21,8 @@ namespace MyToDo.Api.Service.OA_Service
             this.mapper = mapper;
         }
 
+
+        #region 邮件的发送
         /// <summary>
         /// 自增字段留空它会自己加上去的，能有多少填多少
         /// </summary>
@@ -132,5 +134,11 @@ namespace MyToDo.Api.Service.OA_Service
                 throw;
             }
         }
+        #endregion
+
+
+        #region 
+
+        #endregion
     }
 }
