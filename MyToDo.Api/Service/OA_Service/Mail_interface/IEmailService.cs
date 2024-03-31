@@ -7,5 +7,9 @@ namespace MyToDo.Api.Service.OA_Service.Mail_interface
     public interface IEmailService
     {
         Task<ApiResponse> MailSend(EmailDto emailDto);
+
+        Task<ApiResponse> GetAllMail(long ToUserID);
+
+        Task<ApiResponse> GetMail(int EmailID);
     }
 }

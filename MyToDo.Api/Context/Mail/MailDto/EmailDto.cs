@@ -9,5 +9,7 @@
         public string EmailBody { get; set; }
         public long ToUserID { get; set; }
         public string FileName { get; set; }
+
+        public string EmailTitle { get; set; }
     }
 }

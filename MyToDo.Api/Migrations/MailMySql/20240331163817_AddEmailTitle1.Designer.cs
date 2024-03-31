@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyToDo.Api.Context;
 
 namespace MyToDo.Api.Migrations.MailMySql
 {
     [DbContext(typeof(MailMySqlContext))]
-    partial class MailMySqlContextModelSnapshot : ModelSnapshot
+    [Migration("20240331163817_AddEmailTitle1")]
+    partial class AddEmailTitle1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,9 +45,6 @@ namespace MyToDo.Api.Migrations.MailMySql
                         .HasColumnType("int");
 
                     b.Property<string>("EmailBody")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("EmailTitle")
                         .HasColumnType("longtext");
 
                     b.Property<long>("FromUserID")

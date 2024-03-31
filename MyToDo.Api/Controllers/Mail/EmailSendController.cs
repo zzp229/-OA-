@@ -37,6 +37,10 @@ namespace MyToDo.Api.Controllers.Mail
         [HttpPost]
         public async Task<ApiResponse> Send([FromBody] EmailDto emailDto) => await service.MailSend(emailDto);
 
+        [HttpGet]
+        public async Task<ApiResponse> GetMail(int EmailID) => await service.GetMail(EmailID);
 
+        [HttpGet]
+        public async Task<ApiResponse> GetAllMail(long ToUserID) => await service.GetAllMail(ToUserID);
     }
 }

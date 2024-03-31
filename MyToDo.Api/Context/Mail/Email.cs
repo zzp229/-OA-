@@ -16,7 +16,7 @@ namespace MyToDo.Api.Context.Mail
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // 明确指定EmailID为自增
         public int EmailID { get; set; }
 
-
+        public string EmailTitle { get; set; }  // 邮箱标题
         public long FromUserID { get; set; }    // 这个到时候自己获取就行了，不搞外键了
 
         [ForeignKey("FromUserID")]

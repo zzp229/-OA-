@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyToDo.Api.Context;
 using MyToDo.Api.Context.Mail;
 using MyToDo.Api.Context.Mail.MailDto;
 using MyToDo.Api.Service.OA_Service.Mail_interface;
@@ -37,6 +38,7 @@ namespace MyToDo.Api.Service.OA_Service
                 SentDate = DateTime.Now,
                 FromUserID = emailDto.FromUserID,
                 EmailBody = emailDto.EmailBody,
+                EmailTitle = emailDto.EmailTitle,
             };
 
             try
@@ -137,8 +139,38 @@ namespace MyToDo.Api.Service.OA_Service
         #endregion
 
 
-        #region 
+        #region 获取当前用户的所有邮件
+        public async Task<ApiResponse> GetAllMail(long ToUserID)
+        {
+            try
+            {
+                var repository = work.GetRepository<EmailRecipient>();
+                var emails = await repository.GetAllAsync(x => x.ToUserID == ToUserID);
+                return new ApiResponse(true, emails);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+        #endregion
 
+
+
+        #region 获取邮件信息
+        public async Task<ApiResponse> GetMail(int EmailID)
+        {
+            try
+            {
+                var repository = work.GetRepository<Email>();
+                var email = await repository.GetAllAsync(x => x.EmailID == EmailID);
+                return new ApiResponse(true, email);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
         #endregion
     }
 }
