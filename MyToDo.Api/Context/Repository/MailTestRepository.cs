@@ -1,4 +1,5 @@
 ﻿using MyToDo.Api.Context.Mail;
+using MyToDo.Api.Context.Mail.MailDto;
 
 namespace MyToDo.Api.Context.Repository
 {
@@ -20,4 +21,30 @@ namespace MyToDo.Api.Context.Repository
 
         }
     }
+
+    public class EmailRepository : Repository<Email>, IRepository<Email>
+    {
+        public EmailRepository(MailMySqlContext dbContext) : base(dbContext)
+        {
+
+        }
+    }
+
+    public class AttachmentRepository : Repository<Attachment>, IRepository<Attachment>
+    {
+        public AttachmentRepository(MailMySqlContext dbContext) : base(dbContext)
+        {
+
+        }
+    }
+
+    public class EmailRecipientRepository : Repository<EmailRecipient>, IRepository<EmailRecipient>
+    {
+        public EmailRecipientRepository(MailMySqlContext dbContext) : base(dbContext)
+        {
+
+        }
+    }
+
+
 }

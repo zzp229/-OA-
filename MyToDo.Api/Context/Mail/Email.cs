@@ -13,6 +13,7 @@ namespace MyToDo.Api.Context.Mail
     public class Email
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)] // 明确指定EmailID为自增
         public int EmailID { get; set; }
 
 

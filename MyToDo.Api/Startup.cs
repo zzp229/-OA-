@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using MySql.Data.MySqlClient;
 using MyToDo.Api.Context;
 using MyToDo.Api.Context.Mail;
+using MyToDo.Api.Context.Mail.MailDto;
 using MyToDo.Api.Context.Repository;
 using MyToDo.Api.Extensions;
 using MyToDo.Api.Service;
@@ -94,10 +95,22 @@ namespace MyToDo.Api
                 var mysqlConnectionString = Configuration.GetConnectionString("MySqlConnection");
                 options.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString));
             }).AddUnitOfWork<MailMySqlContext>()
-            .AddCustomRepository<MailTest, MailTestRepository>();
+            .AddCustomRepository<MailTest, MailTestRepository>()
+            .AddCustomRepository<Email, EmailRepository>()
+            .AddCustomRepository<Attachment, AttachmentRepository>()
+            .AddCustomRepository<EmailRecipient, EmailRecipientRepository>();
 
             services.AddTransient<IMailTestService, MailTestService>();
             services.AddTransient<ISysUserService, SysUserService>();
+            services.AddTransient<IEmailService, EmailService>();   // 发送邮件服务
+
+
+            // 解决结构序列化为JSON时，序列化器会进入一个无限循环
+            services.AddControllers().AddJsonOptions(x =>
+            {
+                x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+            });
+
 
 
 

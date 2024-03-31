@@ -23,7 +23,5 @@ namespace MyToDo.Api.Context.Mail
         public SysUser ToUser { get; set; } // 引用SysUser
 
         public bool IsRead { get; set; }
-
-        public DateTime? ReadDate { get; set; }
     }
 }
