@@ -6,15 +6,20 @@ using System;
 
 namespace MyToDo.Api.Context.Mail
 {
+    /// <summary>
+    /// 邮件表（Emails）
+    /// </summary>
+    [Table("Email")]
     public class Email
     {
         [Key]
         public int EmailID { get; set; }
 
-        public int FromUserID { get; set; }
+
+        public long FromUserID { get; set; }    // 这个到时候自己获取就行了，不搞外键了
 
         [ForeignKey("FromUserID")]
-        public User FromUser { get; set; }
+        public SysUser FromUser { get; set; } // 引用SysUser
 
         public string EmailBody { get; set; }
 

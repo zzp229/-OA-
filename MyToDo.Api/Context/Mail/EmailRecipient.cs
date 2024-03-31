@@ -12,15 +12,15 @@ namespace MyToDo.Api.Context.Mail
         [Key]
         public int RecipientID { get; set; }
 
-        public int EmailID { get; set; }
+        public int EmailID { get; set; }    // 外键指向Email
 
         [ForeignKey("EmailID")]
         public Email Email { get; set; }
 
-        public int ToUserID { get; set; }
+        public long ToUserID { get; set; }  // 外键指向User
 
         [ForeignKey("ToUserID")]
-        public User ToUser { get; set; }
+        public SysUser ToUser { get; set; } // 引用SysUser
 
         public bool IsRead { get; set; }
 

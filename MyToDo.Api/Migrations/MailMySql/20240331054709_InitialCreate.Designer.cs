@@ -8,8 +8,8 @@ using MyToDo.Api.Context;
 namespace MyToDo.Api.Migrations.MailMySql
 {
     [DbContext(typeof(MailMySqlContext))]
-    [Migration("20240330081006_use_mail_test")]
-    partial class use_mail_test
+    [Migration("20240331054709_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

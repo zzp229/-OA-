@@ -11,7 +11,7 @@ namespace MyToDo.Api.Context.Mail
         [Key]
         public int AttachmentID { get; set; }
 
-        public int EmailID { get; set; }
+        public int EmailID { get; set; }    // 外键指向Email
 
         [ForeignKey("EmailID")]
         public Email Email { get; set; }

@@ -2,94 +2,22 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyToDo.Api.Context;
 
 namespace MyToDo.Api.Migrations.MailMySql
 {
     [DbContext(typeof(MailMySqlContext))]
-    partial class MailMySqlContextModelSnapshot : ModelSnapshot
+    [Migration("20240331063455_add_user")]
+    partial class add_user
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.10");
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.Attachment", b =>
-                {
-                    b.Property<int>("AttachmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmailID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("FilePath")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("FileType")
-                        .HasColumnType("longtext");
-
-                    b.HasKey("AttachmentID");
-
-                    b.HasIndex("EmailID");
-
-                    b.ToTable("Attachment");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.Email", b =>
-                {
-                    b.Property<int>("EmailID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("EmailBody")
-                        .HasColumnType("longtext");
-
-                    b.Property<long>("FromUserID")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("SentDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("EmailID");
-
-                    b.HasIndex("FromUserID");
-
-                    b.ToTable("Email");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.EmailRecipient", b =>
-                {
-                    b.Property<int>("RecipientID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("EmailID")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<DateTime?>("ReadDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<long>("ToUserID")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("RecipientID");
-
-                    b.HasIndex("EmailID");
-
-                    b.HasIndex("ToUserID");
-
-                    b.ToTable("EmailRecipient");
-                });
 
             modelBuilder.Entity("MyToDo.Api.Context.Mail.SysUser", b =>
                 {
@@ -190,54 +118,6 @@ namespace MyToDo.Api.Migrations.MailMySql
                     b.HasKey("UserId");
 
                     b.ToTable("sys_user");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.Attachment", b =>
-                {
-                    b.HasOne("MyToDo.Api.Context.Mail.Email", "Email")
-                        .WithMany("Attachments")
-                        .HasForeignKey("EmailID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Email");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.Email", b =>
-                {
-                    b.HasOne("MyToDo.Api.Context.Mail.SysUser", "FromUser")
-                        .WithMany()
-                        .HasForeignKey("FromUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FromUser");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.EmailRecipient", b =>
-                {
-                    b.HasOne("MyToDo.Api.Context.Mail.Email", "Email")
-                        .WithMany("EmailRecipients")
-                        .HasForeignKey("EmailID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MyToDo.Api.Context.Mail.SysUser", "ToUser")
-                        .WithMany()
-                        .HasForeignKey("ToUserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Email");
-
-                    b.Navigation("ToUser");
-                });
-
-            modelBuilder.Entity("MyToDo.Api.Context.Mail.Email", b =>
-                {
-                    b.Navigation("Attachments");
-
-                    b.Navigation("EmailRecipients");
                 });
 #pragma warning restore 612, 618
         }

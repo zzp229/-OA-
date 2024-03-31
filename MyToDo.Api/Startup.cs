@@ -95,6 +95,7 @@ namespace MyToDo.Api
                 options.UseMySql(mysqlConnectionString, ServerVersion.AutoDetect(mysqlConnectionString));
             }).AddUnitOfWork<MailMySqlContext>()
             .AddCustomRepository<MailTest, MailTestRepository>();
+
             services.AddTransient<IMailTestService, MailTestService>();
             services.AddTransient<ISysUserService, SysUserService>();
 
