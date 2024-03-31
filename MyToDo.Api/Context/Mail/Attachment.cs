@@ -17,9 +17,5 @@ namespace MyToDo.Api.Context.Mail
         public Email Email { get; set; }
 
         public string FileName { get; set; }
-
-        public string FileType { get; set; }
-
-        public string FilePath { get; set; }
     }
 }

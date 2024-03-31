@@ -44,6 +44,10 @@ namespace MyToDo.Api.Service.OA_Service
                 {
                     int EmailID = email.EmailID;    // 插入完成后返回的EmailId
                     await MailRecepient(EmailID, emailDto.ToUserID);
+
+                    if (!string.IsNullOrEmpty(emailDto.FileName))    // 有附加文件才调用这个
+                        await MailAttach(EmailID, emailDto.FileName);
+
                     return new ApiResponse(true, email);
                 }
 
@@ -53,33 +57,6 @@ namespace MyToDo.Api.Service.OA_Service
             {
                 return new ApiResponse(ex.Message);
             }
-            #endregion
-
-
-            #region 收件人
-
-            #endregion
-
-            #region 处理附件
-            //if (file != null && file.Length != 0)
-            //{
-            //    var uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Mail");   // 文件存储到Mail这个文件夹
-
-            //    // 检查目录是否存在，如果不存在，则创建
-            //    if (!Directory.Exists(uploadFolderPath))
-            //    {
-            //        Directory.CreateDirectory(uploadFolderPath);
-            //    }
-
-            //    var filePath = Path.Combine(uploadFolderPath, file.FileName);
-
-            //    using (var stream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //        await file.CopyToAsync(stream);
-            //    }
-
-
-            //}
             #endregion
 
             return null;
@@ -118,7 +95,42 @@ namespace MyToDo.Api.Service.OA_Service
 
                 throw new Exception(ex.Message);
             }
+        }
 
+
+        /// <summary>
+        /// 邮件附件
+        /// </summary>
+        /// <param name="emailId">邮箱ID</param>
+        /// <param name="FileType">文件类型</param>
+        /// <param name="FilePath">文件路径</param>
+        /// <returns></returns>
+        public async Task MailAttach(int emailId, string fileName)
+        {
+            // 创建要插入的对象
+            Attachment attachment = new Attachment()
+            {
+                EmailID = emailId,
+                FileName = fileName,
+            };
+
+            try
+            {
+                await work.GetRepository<Attachment>().InsertAsync(attachment);
+                if (await work.SaveChangesAsync() > 0)
+                {
+                    // 插入成功了
+                }
+                else
+                {
+                    // 插入失败
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

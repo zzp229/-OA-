@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyToDo.Api.Context;
 
 namespace MyToDo.Api.Migrations.MailMySql
 {
     [DbContext(typeof(MailMySqlContext))]
-    partial class MailMySqlContextModelSnapshot : ModelSnapshot
+    [Migration("20240331141015_deleteFilePath")]
+    partial class deleteFilePath
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,6 +29,9 @@ namespace MyToDo.Api.Migrations.MailMySql
                         .HasColumnType("int");
 
                     b.Property<string>("FileName")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FileType")
                         .HasColumnType("longtext");
 
                     b.HasKey("AttachmentID");

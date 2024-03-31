@@ -8,5 +8,6 @@
         public long FromUserID { get; set; }
         public string EmailBody { get; set; }
         public long ToUserID { get; set; }
+        public string FileName { get; set; }
     }
 }
