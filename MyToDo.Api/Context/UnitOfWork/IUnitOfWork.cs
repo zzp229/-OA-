@@ -14,6 +14,8 @@ namespace MyToDo.Api
     public interface IUnitOfWork : IDisposable
     {
 
+        void Update<TEntity>(TEntity entity) where TEntity : class;
+
         /// <summary>
         /// Changes the database name. This require the databases in the same machine. NOTE: This only work for MySQL right now.
         /// </summary>

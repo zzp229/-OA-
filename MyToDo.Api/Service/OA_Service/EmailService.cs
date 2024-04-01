@@ -268,6 +268,52 @@ namespace MyToDo.Api.Service.OA_Service
             }
         }
         #endregion
+
+
+
+
+        #region 点击后这个邮件变为已读
+        public async Task<ApiResponse> FixReaded(int emailId)
+        {
+            try
+            {
+                var repository = work.GetRepository<EmailRecipient>();
+                var emailRecipients = await repository.GetAllAsync(x => x.EmailID == emailId);
+                var emailRecipient = emailRecipients.FirstOrDefault();
+
+                if (emailRecipient != null)
+                {
+                    emailRecipient.IsRead = true; // 标记为已读
+
+                    // 直接使用DbContext的Update方法标记实体为已修改
+                    work.Update(emailRecipient);
+
+                    var result = await work.SaveChangesAsync();
+                    if (result > 0)
+                    {
+                        // 数据库成功更新
+                        return new ApiResponse(true, "邮件已标记为已读");
+                    }
+                    else
+                    {
+                        // 未做任何更新
+                        return new ApiResponse(false, "更新失败，可能邮件已被标记为已读。");
+                    }
+                }
+                else
+                {
+                    return new ApiResponse(false, "未找到指定的邮件");
+                }
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(false, ex.Message);
+            }
+        }
+
+
+        #endregion
+
     }
 
 

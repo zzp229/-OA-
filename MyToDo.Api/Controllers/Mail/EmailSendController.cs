@@ -50,5 +50,8 @@ namespace MyToDo.Api.Controllers.Mail
 
         [HttpGet]
         public async Task<MyMail> GetEmailAsync(int emailId) => await service.GetEmailAsync(emailId);
+
+        [HttpGet]
+        public async Task<ApiResponse> FixReaded(int emailId) => await service.FixReaded(emailId);
     }
 }

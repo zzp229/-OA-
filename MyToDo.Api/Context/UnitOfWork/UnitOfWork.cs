@@ -32,6 +32,11 @@ namespace MyToDo.Api
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public void Update<TEntity>(TEntity entity) where TEntity : class
+        {
+            _context.Set<TEntity>().Update(entity);
+        }
+
         /// <summary>
         /// Gets the db context.
         /// </summary>

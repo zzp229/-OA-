@@ -15,5 +15,6 @@ namespace MyToDo.Api.Service.OA_Service.Mail_interface
 
         Task<List<MyMessage>> GetEmailsForUserAsync(long toUserId);
         Task<MyMail> GetEmailAsync(int emailId);
+        Task<ApiResponse> FixReaded(int emailId);
     }
 }
