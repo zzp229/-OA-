@@ -1,20 +1,28 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MySql.Data.MySqlClient;
 using MyToDo.Api.Context;
 using MyToDo.Api.Context.Mail;
 using MyToDo.Api.Context.Mail.MailDto;
 using MyToDo.Api.Service.OA_Service.Mail_interface;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyToDo.Api.Service.OA_Service
 {
     public class EmailService : IEmailService
     {
+
         private readonly IUnitOfWork work;
         private readonly IMapper mapper;
+
 
         public EmailService(IUnitOfWork work, IMapper mapper)
         {
@@ -142,6 +150,7 @@ namespace MyToDo.Api.Service.OA_Service
         #region 获取当前用户的所有邮件
         public async Task<ApiResponse> GetAllMail(long ToUserID)
         {
+            // 这个不够好，要查出阅读状态 发件人信息，邮件的标题，发送时间
             try
             {
                 var repository = work.GetRepository<EmailRecipient>();
@@ -153,6 +162,93 @@ namespace MyToDo.Api.Service.OA_Service
                 return new ApiResponse(ex.Message);
             }
         }
+
+
+        /// <summary>
+        /// 获取当前用户的所有邮件
+        /// </summary>
+        /// <param name="toUserId"></param>
+        /// <returns></returns>
+        public async Task<List<MyMessage>> GetEmailsForUserAsync(long toUserId)
+        {
+            var connectionString = "server=175.178.166.212;port=3306;database=oadb;uid=root;pwd=h20021023;CharSet=utf8;TreatTinyAsBoolean=true;ConvertZeroDateTime=True;SslMode=None;"; // 从配置文件中获取
+            var result = new List<MyMessage>();
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new MySqlCommand("GetEmailsForUser", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add(new MySqlParameter("ToUserID", toUserId));
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var emailInfo = new MyMessage
+                            {
+                                EmailID = reader.GetInt32(reader.GetOrdinal("EmailID")),
+                                IsRead = reader.GetBoolean(reader.GetOrdinal("IsRead")),
+                                UserName = reader.IsDBNull(reader.GetOrdinal("user_name")) ? null : reader.GetString(reader.GetOrdinal("user_name")),
+                                EmailTitle = reader.IsDBNull(reader.GetOrdinal("EmailTitle")) ? null : reader.GetString(reader.GetOrdinal("EmailTitle")),
+                                SentDate = reader.GetDateTime(reader.GetOrdinal("SentDate"))
+                            };
+                            result.Add(emailInfo);
+                        }
+
+                    }
+                }
+            }
+
+            return result;
+        }
+
+
+
+        /// <summary>
+        /// 根据邮箱id获取这个邮箱的信息
+        /// </summary>
+        /// <param name="emailId"></param>
+        /// <returns></returns>
+        public async Task<MyMail> GetEmailAsync(int emailId)
+        {
+            var connectionString = "server=175.178.166.212;port=3306;database=oadb;uid=root;pwd=h20021023;CharSet=utf8;TreatTinyAsBoolean=true;ConvertZeroDateTime=True;SslMode=None;"; // 使用您的实际连接字符串
+
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                using (var command = new MySqlCommand("GetEmail", connection))
+                {
+                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    command.Parameters.Add(new MySqlParameter("EmailID", emailId));
+
+                    using (var reader = await command.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            var myMail = new MyMail
+                            {
+                                UserName = reader.IsDBNull(reader.GetOrdinal("user_name")) ? null : reader.GetString(reader.GetOrdinal("user_name")),
+                                EmailBody = reader.IsDBNull(reader.GetOrdinal("EmailBody")) ? null : reader.GetString(reader.GetOrdinal("EmailBody")),
+                                SentDate = reader.GetDateTime(reader.GetOrdinal("SentDate")),
+                                EmailTitle = reader.IsDBNull(reader.GetOrdinal("EmailTitle")) ? null : reader.GetString(reader.GetOrdinal("EmailTitle")),
+                                FileName = reader.IsDBNull(reader.GetOrdinal("FileName")) ? null : reader.GetString(reader.GetOrdinal("FileName")),
+                            };
+                            return myMail;
+                        }
+                    }
+                }
+            }
+
+            return null; // 如果没有数据返回，则返回null
+        }
+
+
+
+
+
         #endregion
 
 
@@ -173,4 +269,6 @@ namespace MyToDo.Api.Service.OA_Service
         }
         #endregion
     }
+
+
 }

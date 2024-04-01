@@ -113,8 +113,6 @@ namespace MyToDo.Api
 
 
 
-
-
             var automapperConfog = new MapperConfiguration(config =>
             {
                 config.AddProfile(new AutoMapperProFile());

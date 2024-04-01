@@ -1,5 +1,8 @@
-﻿using MyToDo.Api.Context.Mail;
+﻿using Microsoft.EntityFrameworkCore;
+using MyToDo.Api.Context.Mail;
 using MyToDo.Api.Context.Mail.MailDto;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MyToDo.Api.Context.Repository
 {
@@ -45,6 +48,5 @@ namespace MyToDo.Api.Context.Repository
 
         }
     }
-
 
 }

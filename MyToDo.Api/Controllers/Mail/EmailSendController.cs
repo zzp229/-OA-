@@ -5,6 +5,7 @@ using MyToDo.Api.Context.Mail.MailDto;
 using MyToDo.Api.Service;
 using MyToDo.Api.Service.OA_Service.Mail_interface;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -42,5 +43,12 @@ namespace MyToDo.Api.Controllers.Mail
 
         [HttpGet]
         public async Task<ApiResponse> GetAllMail(long ToUserID) => await service.GetAllMail(ToUserID);
+
+
+        [HttpGet]
+        public async Task<List<MyMessage>> GetEmailsForUserAsync(long toUserId) => await service.GetEmailsForUserAsync(toUserId);
+
+        [HttpGet]
+        public async Task<MyMail> GetEmailAsync(int emailId) => await service.GetEmailAsync(emailId);
     }
 }
